@@ -12,3 +12,6 @@ TODO:
             beats
                     r peak
                     QRS
+                    
+    By convention, a Python class is written with capital letters separating each word. If we had a multi-word class, then each word would be a capital letter.
+

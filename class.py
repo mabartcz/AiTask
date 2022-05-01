@@ -35,12 +35,12 @@ class Examination:
         self.signalTreePath = "patient/examination/analysis/blockExtended/signal"
 
         self.signalElement = self.dom.find(self.signalTreePath)
-        self.leadList = list(map(str, self.signalElement.get("leads").split()))[0:self.numberOfLeads]
+        self.leadNames = list(map(str, self.signalElement.get("leads").split()))[0:self.numberOfLeads]
         self.numberSamples = int(self.signalElement.get("numberSamples"))
 
     # Print header info
     def infoHeader(self):
-        print(f"\nNumber of leads:\t {len(self.leadList)}")
+        print(f"\nNumber of leads:\t {len(self.leadNames)}")
         print(f"Number of samples:\t {self.numberSamples}")
     
     # Load X signal waves in (array) Lead object
@@ -49,9 +49,9 @@ class Examination:
         fSamp = int(self.signalElement.get("frequency"))
 
         for index, waveLead in enumerate(waves):
-            if waveLead.get("lead") == self.leadList[index]:
+            if waveLead.get("lead") == self.leadNames[index]:
                 signal = list(map(int, (waveLead.text).split()))
-                self.leads.append(self.Lead(self.leadList[index], fSamp, signal))
+                self.leads.append(self.Lead(self.leadNames[index], fSamp, signal))
 
     # Print signal info
     def infoSignal(self):
@@ -64,7 +64,6 @@ class Examination:
         beatTable = self.dom.find('.//eventTable[@name="BeatTable"]')
         events = beatTable.findall("event")
         fSamp = int(beatTable.get("frequency"))
-        rPositions = 0
 
         for iLead, lead in enumerate(self.leads):
             self.eventTable = []
@@ -100,7 +99,7 @@ class Examination:
         print(f"F sampling of events:\t {self.eventTable[0].fSamp} Hz")
 
     # Plot ECG 
-    def plotECG(self, plotR, plotQRS):
+    def plotECG(self, plotR=False, plotQRS=False):
         # Settings
         leadNumber = len(self.leads)
         if leadNumber == 1:
@@ -114,7 +113,7 @@ class Examination:
         plotIndex = list(range(1, leadNumber+1))
         plotIndex = plotIndex[::2] + plotIndex[1::2]
 
-        fig = plt.figure(figsize=(11,7))
+        plt.figure(figsize=(11,7))
 
         for iLead, lead in enumerate(self.leads):
             plt.rc('xtick', labelsize=4)
@@ -146,10 +145,42 @@ class Examination:
 
         plt.show()
 
+    def plotQRS(self):
+        # Settings
+        leadNumber = len(self.leads)
+        if leadNumber == 1:
+            colmnCount = 1
+        else:
+            colmnCount = 2
+        rowCount = int(np.ceil(leadNumber/2) // 2 * 2 + 1)
+        rowCount = int(leadNumber/2)
+
+        # Rearange to fit ECG view
+        plotIndex = list(range(1, leadNumber+1))
+        plotIndex = plotIndex[::2] + plotIndex[1::2]
+
+        plt.figure(figsize=(11,7))
+
+        for iLead, lead in enumerate(self.leads):
+            plt.rc('xtick', labelsize=4)
+            plt.subplots_adjust(left=0.04, right=0.96, bottom=0.04, top=0.96, wspace=0.1)
+            plt.subplot(rowCount, colmnCount, plotIndex[iLead])
+
+            # Plot signal
+            for beat in lead.beats:
+                plt.plot(beat.QRS, linewidth=0.6)
+
+            plt.ylabel(lead.name)
+            plt.yticks([])
+
+        plt.show()
+
+
 
 exam = Examination('MUSE_20180111_155154_74000_A000.xml', numberOfLeads=12)
 exam.infoHeader()
 exam.infoSignal()
 exam.infoEvents()
-exam.plotECG(plotR=False, plotQRS=True)
+# exam.plotECG(plotR=True, plotQRS=True)
+exam.plotQRS()
 

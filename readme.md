@@ -10,5 +10,7 @@ TODO:
             čas v sec
             uV
 
+    Kontrola QRS segmentů !!!
+
 
 

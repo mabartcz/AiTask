@@ -1,3 +1,5 @@
+AI Task for BTL interview 2022
+
 TODO:
     Udělat metodu pro převzorkování
         Udělat hlídání jestli je stejná fSamp

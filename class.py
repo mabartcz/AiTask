@@ -86,8 +86,8 @@ class Examination:
 
     # Load QRS segmants
     def loadQRS(self):
-        for indexLead, lead in enumerate(self.leads):
-            for indexBeat, beat in enumerate(lead.beats):
+        for lead in self.leads:
+            for beat in lead.beats:
                 sFrom = int(beat.rPosition-beat.qrsOn)
                 sTo = int(beat.rPosition-beat.qrsOff)
                 beat.QRS = lead.signal[sFrom:sTo]
@@ -104,20 +104,20 @@ class Examination:
         leadNumber = len(self.leads)
         if leadNumber == 1:
             colmnCount = 1
+            rowCount = 1
         else:
             colmnCount = 2
-        rowCount = int(np.ceil(leadNumber/2) // 2 * 2 + 1)
-        rowCount = int(leadNumber/2)
+            rowCount = int(np.ceil(leadNumber/2))
 
         # Rearange to fit ECG view
         plotIndex = list(range(1, leadNumber+1))
         plotIndex = plotIndex[::2] + plotIndex[1::2]
 
-        plt.figure(figsize=(11,7))
+        fig = plt.figure(figsize=(11,7))
 
         for iLead, lead in enumerate(self.leads):
             plt.rc('xtick', labelsize=4)
-            plt.subplots_adjust(left=0.04, right=0.96, bottom=0.04, top=0.96, wspace=0.1)
+            plt.subplots_adjust(left=0.04, right=0.96, bottom=0.04, top=0.94, wspace=0.1)
             plt.subplot(rowCount, colmnCount, plotIndex[iLead])
 
             # Plot signal
@@ -141,6 +141,7 @@ class Examination:
                     plt.axvspan(beat.rPosition-beat.qrsOn, beat.rPosition-beat.qrsOff, facecolor='r', alpha=0.2)
 
             plt.ylabel(lead.name)
+            fig.suptitle('ECG signal in leads', fontsize=10)
             plt.yticks([])
 
         plt.show()
@@ -150,20 +151,20 @@ class Examination:
         leadNumber = len(self.leads)
         if leadNumber == 1:
             colmnCount = 1
+            rowCount = 1
         else:
             colmnCount = 2
-        rowCount = int(np.ceil(leadNumber/2) // 2 * 2 + 1)
-        rowCount = int(leadNumber/2)
+            rowCount = int(np.ceil(leadNumber/2))
 
         # Rearange to fit ECG view
         plotIndex = list(range(1, leadNumber+1))
         plotIndex = plotIndex[::2] + plotIndex[1::2]
 
-        plt.figure(figsize=(11,7))
+        fig = plt.figure(figsize=(11,7))
 
         for iLead, lead in enumerate(self.leads):
             plt.rc('xtick', labelsize=4)
-            plt.subplots_adjust(left=0.04, right=0.96, bottom=0.04, top=0.96, wspace=0.1)
+            plt.subplots_adjust(left=0.04, right=0.96, bottom=0.04, top=0.94, wspace=0.1)
             plt.subplot(rowCount, colmnCount, plotIndex[iLead])
 
             # Plot signal
@@ -173,14 +174,15 @@ class Examination:
             plt.ylabel(lead.name)
             plt.yticks([])
 
+        fig.suptitle('QRS segments in leads', fontsize=10)
         plt.show()
 
 
 
-exam = Examination('MUSE_20180111_155154_74000_A000.xml', numberOfLeads=12)
+exam = Examination('MUSE_20180111_155154_74000_A000.xml', numberOfLeads=1)
 exam.infoHeader()
 exam.infoSignal()
 exam.infoEvents()
-# exam.plotECG(plotR=True, plotQRS=True)
+exam.plotECG(plotR=True, plotQRS=True)
 exam.plotQRS()
 

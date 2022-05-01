@@ -6,7 +6,9 @@ TODO:
         Vykreslit všechny svody
         Vykreslit lead
         Vykreslit QRS přes sebe ?
+        Popsat osy
+            čas v sec
+            uV
 
-    Sjednotit používání numpy arrays ?
 
 
